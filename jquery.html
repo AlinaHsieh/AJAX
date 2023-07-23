@@ -61,20 +61,20 @@
     ********************************************************/
      
     //利用$.ajax()方法傳送請求並取得回應
-    $.ajax(
-      {
-        url:'https://kktix.com/events.json',
-        type:'get',
-        success:(res)=>{ //只放一個參數：body的內容;第二個參數：cookie session
-          console.log(res)
-          events(res)
-        },
-        error:()=>{
-          console.log("請求失敗")
-        }
-        // complete: //整個過程都結束去做的動作(通常比較不會去寫)
-      }
-    ) 
+    // $.ajax(
+    //   {
+    //     url:'https://kktix.com/events.json',
+    //     type:'get',
+    //     success:(res)=>{ //只放一個參數：body的內容;第二個參數：cookie session
+    //       console.log(res)
+    //       events(res)
+    //     },
+    //     error:()=>{
+    //       console.log("請求失敗")
+    //     }
+    //     // complete: //整個過程都結束去做的動作(通常比較不會去寫)
+    //   }
+    // ) 
 
     //建立回呼函式(call back function)來處理回應時的各項行為
     function events(json){ //接收json字串格式的function
@@ -99,6 +99,8 @@
             
     }
     //利用$.get()方法傳送請求並取得回應
-
+    $.get('https://kktix.com/events.json',(res)=>{
+      console.log(res);
+    })
 
   </script>
