@@ -7,12 +7,45 @@
     <title>XMLHttpRequest</title>
     <link rel="shortcut icon" href="#" type="image/x-icon">
     <link rel="stylesheet" href="style.css">
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+<style>
+    .name {
+    font-size: 24px;
+    width: 50%;
+    color: darkblue;
+    text-shadow: 1px 1px 2px lightblue;
+}
+
+.content {
+    font-size: 20px;
+    font-weight: 600;
+    margin: 5px 0;
+}
+
+li {
+    width: 30%;
+    display: inline-block;
+    margin: 1%;
+    padding: 10px;
+    box-shadow: 2px 2px 10px #ccc;
+    transition: all 0.5s;
+}
+
+li:hover{
+    transform:scale(1.05);
+    transition: all 0.5s;
+
+}
+
+</style>
 </head>
 <body>
     <h1 class="header">XMLHttpRequest</h1>
     <div class="title"></div>
     <h4></h4>
-    <ul></ul>
+    <ul class="event-list"> 
+        
+    </ul>
 
 </body>
 </html>
@@ -26,14 +59,53 @@
     ********************************************************/
 
     //宣告一個XMLHttpRequest物件
-
+    let xhr = new XMLHttpRequest;
 
     //建立請求的各項設定及實質內容
-
+    xhr.open(
+        'get', //method
+        'https://kktix.com/events.json' //url 要從哪個網址拿到什麼資訊
+    )
 
     //建立得到回應時的各項設定及行為
+    xhr.onload=function(){ //onload事件
+        let type = xhr.getResponseHeader("content-Type") //判斷用，可有可無
+        let status = xhr.status //狀態是否成功
+        let response = xhr.response //拿到資料裡面的文字
+            // console.log("response",response);
+            // console.log(response.substr(0,10)); //取得字串的函式
+        events(response) 
 
+        }
 
     //送出請求
+    xhr.send()
+
+    function events(json){ //接收json字串格式的function
+        let events = JSON.parse(json); //把JSON字串做解析
+        console.log(events); //解析後
+        // console.log(json);  //解析前
+
+        let title = events.title
+        $(".title").text(title) //在<div class='title'>中放文字title變數
+        
+        let entry = events.entry
+        entry.forEach((event,idx) => {
+            // console.log(event.title,event.content)
+            // console.log(idx)
+
+            //用split把斷行符號\n做分割，再用map(有回傳值)再做一次split(用:分割字串)
+            let content = event.content.split('\n').map((item,idx)=>{return item.split("：")}) //得到陣列結果>用此套到下方li
+            console.log(content);
+            let li = `<li>
+                        <div class="name">${event.title}</div>
+                        <div class="content">${content[0][1]}</div>
+                        <div class="content">${content[1][1]}</div>
+
+                      </li>`;
+        $(".event-list").append(li); //一個一個接在後面放入ul
+        });
+            
+    }
 
     </script>
