@@ -20,7 +20,7 @@
 
 <body>
   <h1 class="header">學生資料管理系統</h1>
-  <button onclick="allstudents()">顯示所有學生</button>
+  <button onclick="allStudents()">顯示所有學生</button>
   <button type="button" class="btn btn-primary" onclick="addModal()">
     新增學生
   </button>
@@ -103,26 +103,72 @@
 
   //查詢資料的函式
   queryClasses();
-  
+
   function queryClasses() {
-    
+
     $.get("./api/classes.php", (classes) => {
       $("#classes").html(classes)
       console.log(classes)
     })
   }
 
-  function allstudents() {
+  function allStudents() {
+    now = 0
     $.get("./api/all.php", (students) => {
-      // console.log(students);
-      // $("#students").html(students);
-
+      //$.get("http://220.128.133.15/s1120226/all.php",(students)=>{
+      console.log(students)
       let list = '';
       students.forEach((stu) => {
-        list = list + stu.name + '-' + stu.birthday + '<br>';
-      });
+        list = list + "<div class='m-2'>";
+        list = list + stu.name + '-' + stu.birthday;
+        list = list + `<button class='btn btn-success mx-2 edit' data-id='${stu.id}'>編輯</button>`;
+        list = list + `<button class='btn btn-danger del' data-id='${stu.id}'>刪除</button>`;
+        list = list + "</div>";
+      })
+      $("#students").html(list);
+      regDel();
+      regEdit()
+
     })
   }
+
+  function regDel() {
+    $(".del").on('click', function () {
+      let id = $(this).data('id')
+
+      $("#modal").load("confirm.php", { id }, function () {
+        mod = document.getElementById("confirmModal")
+        windows = new bootstrap.Modal(mod)
+        windows.show()
+
+        mod.addEventListener("hidden.bs.modal", function () {
+          $("#modal").html("")
+          windows.dispose()
+          queryClasses();
+        })
+      })
+
+    })
+  }
+  function regEdit() {
+    $(".edit").on('click', function () {
+      let id = $(this).data('id')
+
+      $("#modal").load("edit_form.php", { id }, function () {
+        mod = document.getElementById("editModal")
+        windows = new bootstrap.Modal(mod)
+        windows.show()
+
+        mod.addEventListener("hidden.bs.modal", function () {
+          $("#modal").html("")
+          windows.dispose()
+          queryClasses();
+        })
+      })
+
+    })
+  }
+
 
   let now;
   function query(classroom) {
@@ -131,20 +177,20 @@
     //{參數1,參數2} 參數1相當於 input的name欄位 參數2是值 兩個參數名稱相同時可只放一個參數
     $.get("./api/query.php", { classroom }, (students) => {  //拿到學生的資料
       $("#students").html(students)
-        $(".del").on('click', function () {
-          let id = $(this).data('id')
-          $("#modal").load("confirm.php",{id}, function () {
-            mod = document.getElementById("confirmModal")
-            windows = new bootstrap.Modal(mod)
-            windows.show()
+      $(".del").on('click', function () {
+        let id = $(this).data('id')
+        $("#modal").load("confirm.php", { id }, function () {
+          mod = document.getElementById("confirmModal")
+          windows = new bootstrap.Modal(mod)
+          windows.show()
 
-            mod.addEventListener("hidden.bs.modal", function () {
-              $("#modal").html("")
-              windows.dispose()
-              queryClasses();
-            })
+          mod.addEventListener("hidden.bs.modal", function () {
+            $("#modal").html("")
+            windows.dispose()
+            queryClasses();
           })
         })
+      })
 
     })
   }
@@ -156,10 +202,15 @@
 
   //刪除資料的函式
   function del(id){
-    $.post("./api/delete.php",{id},()=>{
-        windows.hide();
+  console.log('del');
+  $.post("./api/delete.php",{id},()=>{
+      windows.hide()
+      if(now!=0){
         query(now)
-    })
-  }
+      }else{
+        allStudents();
+      }
+  })
+}
 
 </script>
