@@ -55,7 +55,7 @@
     return data;
   }
 
-  
+
   //新增資料的函式
   function addStudent() {
     // console.log($("#uni_id").val());
@@ -78,21 +78,21 @@
     // console.log(data);
   }
 
-  let mod,windows
-  
+  let mod, windows
+
   function addModal() {
     $.get("modal.html", (modal) => { //去指定路徑撈資料，再把撈到的資料顯示在網頁上
       $("#modal").html(modal);
       // let mod = new bootstrap.Modal($('#addModal')) //取得Modal的物件
-      mod=document.getElementById("addModal")
-    windows=new bootstrap.Modal(mod)
-    windows.show()
+      mod = document.getElementById("addModal")
+      windows = new bootstrap.Modal(mod)
+      windows.show()
 
-    mod.addEventListener("hidden.bs.modal",function(){
-      $("#modal").html("")
-      windows.dispose()
-      queryClasses();
-    })
+      mod.addEventListener("hidden.bs.modal", function () {
+        $("#modal").html("")
+        windows.dispose()
+        queryClasses();
+      })
 
     })
   }
@@ -103,8 +103,9 @@
 
   //查詢資料的函式
   queryClasses();
-
+  
   function queryClasses() {
+    
     $.get("./api/classes.php", (classes) => {
       $("#classes").html(classes)
       console.log(classes)
@@ -123,11 +124,28 @@
     })
   }
 
+  let now;
   function query(classroom) {
+    now = classroom;
     // $.get("./api/query.php",{classroom:classroom})
     //{參數1,參數2} 參數1相當於 input的name欄位 參數2是值 兩個參數名稱相同時可只放一個參數
     $.get("./api/query.php", { classroom }, (students) => {  //拿到學生的資料
       $("#students").html(students)
+        $(".del").on('click', function () {
+          let id = $(this).data('id')
+          $("#modal").load("confirm.php",{id}, function () {
+            mod = document.getElementById("confirmModal")
+            windows = new bootstrap.Modal(mod)
+            windows.show()
+
+            mod.addEventListener("hidden.bs.modal", function () {
+              $("#modal").html("")
+              windows.dispose()
+              queryClasses();
+            })
+          })
+        })
+
     })
   }
 
@@ -137,8 +155,11 @@
   }
 
   //刪除資料的函式
-  function del() {
-
+  function del(id){
+    $.post("./api/delete.php",{id},()=>{
+        windows.hide();
+        query(now)
+    })
   }
 
 </script>
