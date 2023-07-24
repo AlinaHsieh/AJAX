@@ -21,11 +21,17 @@
 <body>
   <h1 class="header">學生資料管理系統</h1>
   <button onclick="allstudents()">顯示所有學生</button>
+  <button type="button" class="btn btn-primary" onclick="addModal()">
+    新增學生
+  </button>
   <div id="classes">
     <button>一年一班</button>
     <button>一年二班</button>
   </div>
   <div id="students">
+
+  </div>
+  <div id="modal">
 
   </div>
 
@@ -41,8 +47,56 @@
   * 5.是否需要更新畫面內容？更新畫面的方法？
   ************************************/
 
+  function getForm(els) {
+    let data = {}
+    els.each((idx, input) => {
+      data[$(input).attr('id')] = $(input).val()
+    })
+    return data;
+  }
 
+  
   //新增資料的函式
+  function addStudent() {
+    // console.log($("#uni_id").val());
+    let form = $("form input") //撈出form表單的所有input
+    let data = getForm(form)
+    $.post("./api/insert.php", data, (response) => {
+      // console.log(response);
+      if (parseInt(response) > 0) {
+        alert("新增完成");
+      } else {
+        alert("新增失敗");
+      }
+      windows.hide()
+    })
+    // console.log(data)
+    // let data={}
+    // form.each((idx,input)=>{
+    //   data[$(input).attr('id')]=$(input).val() //得到input的值(表單資料)塞回data陣列
+    // })
+    // console.log(data);
+  }
+
+  let mod,windows
+  
+  function addModal() {
+    $.get("modal.html", (modal) => { //去指定路徑撈資料，再把撈到的資料顯示在網頁上
+      $("#modal").html(modal);
+      // let mod = new bootstrap.Modal($('#addModal')) //取得Modal的物件
+      mod=document.getElementById("addModal")
+    windows=new bootstrap.Modal(mod)
+    windows.show()
+
+    mod.addEventListener("hidden.bs.modal",function(){
+      $("#modal").html("")
+      windows.dispose()
+      queryClasses();
+    })
+
+    })
+  }
+
   function create() {
 
   }
@@ -61,7 +115,7 @@
     $.get("./api/all.php", (students) => {
       // console.log(students);
       // $("#students").html(students);
-      
+
       let list = '';
       students.forEach((stu) => {
         list = list + stu.name + '-' + stu.birthday + '<br>';
@@ -72,9 +126,9 @@
   function query(classroom) {
     // $.get("./api/query.php",{classroom:classroom})
     //{參數1,參數2} 參數1相當於 input的name欄位 參數2是值 兩個參數名稱相同時可只放一個參數
-    $.get("./api/query.php",{classroom},(students)=>{  //拿到學生的資料
+    $.get("./api/query.php", { classroom }, (students) => {  //拿到學生的資料
       $("#students").html(students)
-    }) 
+    })
   }
 
   //編輯資料的函式
