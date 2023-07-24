@@ -60,7 +60,12 @@
   function allstudents() {
     $.get("./api/all.php", (students) => {
       // console.log(students);
-      $("#students").html(students);
+      // $("#students").html(students);
+      
+      let list = '';
+      students.forEach((stu) => {
+        list = list + stu.name + '-' + stu.birthday + '<br>';
+      });
     })
   }
 
